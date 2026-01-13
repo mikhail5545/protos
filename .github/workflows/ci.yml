@@ -1,0 +1,21 @@
+name: ci.yml
+on: [push, pull_request]
+
+jobs:
+  proto-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Buf
+        run: |
+          curl -sSLf "https://github.com/bufbuild/buf/releases/latest/download/buf-$(uname | tr '[:upper:]' '[:lower:]')-x86_64" -o /usr/local/bin/buf
+          chmod +x /usr/local/bin/buf
+          buf --version
+
+      - name: buf lint
+        run: buf lint
+
+      - name: buf breaking (agains previous release on buf.build)
+        run: |
+          buf breaking --against `buf.build/vitainmove/protos:latest` || true

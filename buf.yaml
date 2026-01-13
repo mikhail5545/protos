@@ -1,0 +1,11 @@
+version: v1
+name: vitainmove/protos
+build:
+  roots:
+    - proto
+  lint:
+    use:
+        - DEFAULT
+  breaking:
+    use:
+        - FILE

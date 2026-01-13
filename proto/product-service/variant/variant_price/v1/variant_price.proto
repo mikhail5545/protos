@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+package variant_price.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/mikhail5545/protos/gen/go/product-service/variant/variant_price/v1;variant_pricepbv1";
+
+enum Source {
+  SOURCE_MANUAL = 0;
+  SOURCE_PROMOTION = 1;
+  SOURCE_AUTO_CONVERTED = 2;
+}
+
+message VariantPrice{
+  bytes uuid = 1;
+  google.protobuf.Timestamp created_at = 2;
+  google.protobuf.Timestamp updated_at = 3;
+
+  bytes variant_uuid = 4;
+  string market = 5;
+  string currency = 6;
+  int64 amount_minor = 7;
+
+  google.protobuf.Timestamp valid_from = 8;
+  optional google.protobuf.Timestamp valid_to = 9;
+
+  Source source = 10;
+
+  optional string note = 11;
+  optional string invalidate_reason = 12;
+
+  optional bytes created_by = 13;
+  optional bytes invalidated_by = 14;
+
+  optional string created_by_name = 15;
+  optional string invalidated_by_name = 16;
+
+  optional bytes promotion_uuid = 17;
+}
+
+message GetRequest{
+  bytes uuid = 1;
+  string market = 2;
+  bytes variant_uuid = 3;
+  optional bool is_valid = 4;
+}
+
+message GetResponse{
+  VariantPrice variant_price = 1;
+}
+
+message ListRequest{
+  repeated bytes uuids = 1;
+  repeated bytes product_uuids = 2;
+  repeated bytes variant_uuids = 3;
+  repeated string markets = 4;
+  repeated string currencies = 5;
+  repeated Source sources = 6;
+
+  optional string order_by = 7;
+  optional string order_dir = 8;
+
+  int32 page_size = 9;
+  string page_token = 10;
+}
+
+message ListResponse{
+  repeated VariantPrice variant_prices = 1;
+  string next_page_token = 2;
+}
+
+message CreateRequest{
+  bytes variant_uuid = 1;
+  string market = 2;
+  string currency = 3;
+  int64 amount_minor = 4;
+
+  bytes admin_uuid = 5;
+  string admin_name = 6;
+  string note = 7;
+}
+
+message CreateResponse{
+  VariantPrice variant_price = 1;
+}
+
+message InvalidateRequest{
+  bytes uuid = 1;
+  bytes admin_uuid = 2;
+  string admin_name = 3;
+  string note = 4;
+}
+
+message PingResponse {
+  int64 timestamp = 1;
+}
+
+service VariantPriceService{
+  rpc Ping(google.protobuf.Empty) returns (PingResponse);
+  rpc Get(GetRequest) returns (GetResponse);
+  rpc List(ListRequest) returns (ListResponse);
+  rpc ListIrrelevant(ListRequest) returns (ListResponse);
+  rpc Create(CreateRequest) returns (CreateResponse);
+  rpc Invalidate(InvalidateRequest) returns (google.protobuf.Empty);
+}
