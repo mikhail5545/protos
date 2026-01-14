@@ -1,18 +1,18 @@
 .PHONY: lint proto-check gen-descriptor
 
-# Lint: using protolint (https://github.com/yoheimuta/protolint)
-
 lint:
-	@command -v protoc >/dev/null 2>&1 || (echo "install protoc: scripts/install-protoc.sh" && exit 1)
-	@command -v protoc-gen-go >/dev/null 2>&1 || (echo "install protoc-gen-go: scripts/install-protoc-plugins.sh" && exit 1)
-	@TMPDIR=$$(mktemp -d) && \
-		protoc -I proto --go_out=$$TMPDIR --go_opt=paths=source_relative \
-			--go-grpc_out=$$TMPDIR --go-grpc_opt=paths=source_relative $$(find proto -name '*.proto') && \
-		echo "proto files compiled successfully (output in $$TMPDIR)"
+	@command -v buf >/dev/null 2>&1 || (echo "install buf: https://docs.buf.build/installation" && exit 1)
+	buf lint
+
+proto-check:
+	@command -v buf >/dev/null 2>&1 || (echo "install buf: https://docs.buf.build/installation" && exit 1)
+	if [ -f protos.pb ]; then \
+	  buf breaking --against protos.pb; \
+	else \
+	  echo "No protos.pb baseline found; skipping buf breaking. Consider creating one with 'make gen-descriptor' after a stable release."; \
+	fi
 
 gen-descriptor:
-	@protoc -I proto \
-		--include_imports --include_source_info \
-		--descriptor_set_out=protos.pb \
-		$$(find proto -name '*.proto')
-	@echo "Wrote descriptor to protos.pb"
+	@command -v buf >/dev/null 2>&1 || (echo "install buf: https://docs.buf.build/installation" && exit 1)
+	# generates a descriptor set including imports and source info
+	buf build -o protos.pb
