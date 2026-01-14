@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package proto.product_service.video.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/mikhail5545/protos/gen/go/product_service/video/v1;videopbv1";
+
+enum VideoStatus{
+  VIDEO_STATUS_UNSPECIFIED = 0;
+  VIDEO_STATUS_ACTIVE = 1;
+  VIDEO_STATUS_BROKEN = 2;
+}
+
+enum UploadStatus{
+  UPLOAD_STATUS_UNSPECIFIED = 0;
+  UPLOAD_STATUS_PREPARING = 1;
+  UPLOAD_STATUS_READY = 2;
+  UPLOAD_STATUS_ERRORED = 3;
+}
+
+message Video{
+  bytes uuid = 1;
+  google.protobuf.Timestamp created_at = 2;
+  google.protobuf.Timestamp updated_at = 3;
+  optional google.protobuf.Timestamp deleted_at = 4;
+
+  bytes media_service_uuid = 5;
+  optional string public_playback_id = 6;
+  string signed_playback_id = 7;
+  float duration_seconds = 8;
+  optional string aspect_ratio = 9;
+  optional string thumbnail_url = 10;
+  VideoStatus status = 11;
+  UploadStatus upload_status = 12;
+}
+
+message BrokenVideoRequest{
+  bytes media_service_uuid = 1;
+  string reason = 2;
+  bytes admin_uuid = 3;
+  string admin_name = 4;
+}
+
+message BrokenVideoResponse {}
+
+message PingRequest {}
+
+message PingResponse {
+  int64 timestamp = 1;
+}
+
+service VideoService{
+  rpc Ping(PingRequest) returns (PingResponse);
+  rpc BrokenVideo(BrokenVideoRequest) returns (BrokenVideoResponse);
+}

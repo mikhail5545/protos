@@ -1,0 +1,250 @@
+syntax = "proto3";
+
+package proto.product_service.product.v1;
+
+import "google/protobuf/timestamp.proto";
+
+import "proto/product_service/variant/v1/variant.proto";
+import "proto/product_service/category/v1/category.proto";
+import "proto/product_service/collection/v1/collection.proto";
+import "proto/product_service/product/product_image/v1/product_image.proto";
+
+option go_package = "github.com/mikhail5545/protos/gen/go/product_service/product/v1;productpbv1";
+
+enum ProductType{
+  PRODUCT_TYPE_UNSPECIFIED = 0;
+  PRODUCT_TYPE_PHYSICAL_GOOD = 1;
+  PRODUCT_TYPE_COURSE = 2;
+  PRODUCT_TYPE_TRAINING = 3;
+  PRODUCT_TYPE_SEMINAR = 4;
+  PRODUCT_TYPE_BUNDLE = 5;
+}
+
+enum ProductStatus{
+  PRODUCT_STATUS_UNSPECIFIED = 0;
+  PRODUCT_STATUS_ACTIVE = 1;
+  PRODUCT_STATUS_DRAFT = 2;
+  PRODUCT_STATUS_ARCHIVED = 3;
+}
+
+message Product{
+  bytes uuid = 1;
+  google.protobuf.Timestamp created_at = 2;
+  google.protobuf.Timestamp updated_at = 3;
+  optional google.protobuf.Timestamp deleted_at = 4;
+  // URL-friendly identifier for the product.
+  string slug = 5;
+  // The main title of the product.
+  string title = 6;
+  // An optional subtitle for the product.
+  optional string subtitle = 7;
+  // Detailed product description, can be Markdown or HTML.
+  optional string description = 8;
+  // A brief summary of the product.
+  optional string short_description = 9;
+  // The type of the product (e.g., physical_good, course).
+  ProductType product_type = 10;
+  // The current status of the product (e.g., draft, active).
+  ProductStatus status = 11;
+  // A list of tags for filtering and organization.
+  repeated string tags = 12;
+  // Flexible key/value pairs for custom data.
+  optional string metadata = 13;
+
+  // SEO title for search engines.
+  optional string meta_title = 14;
+  // SEO description for search engines.
+  optional string meta_description = 15;
+
+  // Start date and time for event-type products.
+  optional google.protobuf.Timestamp event_starts_at = 16;
+  // End date and time for event-type products.
+  optional google.protobuf.Timestamp event_ends_at = 17;
+  // Location of the event.
+  optional string venue = 18;
+  // Maximum number of attendees for the event.
+  optional int32 max_seats = 19;
+  // Number of seats already booked.
+  optional int32 booked_seats = 20;
+  // Timezone of the event.
+  optional string timezone = 21;
+
+  // Product variants (e.g., size, color).
+  repeated variant.v1.Variant variants = 22;
+  // Associated product images.
+  repeated product_image.v1.ProductImage images = 23;
+  // Categories the product belongs to.
+  repeated category.v1.Category categories = 24;
+  // Collections the product is part of.
+  repeated collection.v1.Collection collections = 25;
+
+  optional bytes created_by = 26;
+  optional bytes published_by = 27;
+  optional bytes archived_by = 28;
+  optional bytes restored_by = 29;
+  optional string created_by_name = 30;
+  optional string published_by_name = 31;
+  optional string archived_by_name = 32;
+  optional string restored_by_name = 33;
+
+  optional string note = 34;
+  optional string archive_reason = 35;
+}
+
+message GetRequest{
+  optional bytes uuid = 1;
+  optional string slug = 2;
+  string market = 3;
+}
+
+message GetResponse{
+  product.v1.Product product = 1;
+}
+
+message GetWithDraftRequest{
+  optional bytes uuid = 1;
+  optional string slug = 2;
+  string market = 3;
+}
+
+message GetWithDraftResponse{
+  product.v1.Product product = 1;
+}
+
+message GetWithArchivedRequest{
+  optional bytes uuid = 1;
+  optional string slug = 2;
+  string market = 3;
+}
+
+message GetWithArchivedResponse{
+  product.v1.Product product = 1;
+}
+
+message ListRequest{
+  repeated string markets = 1;
+  int32 page_size = 2;
+  string page_token = 3;
+
+  repeated bytes uuids = 4;
+  repeated string slugs = 5;
+  repeated ProductType types = 6;
+  repeated bytes category_uuids = 7;
+  repeated bytes collection_uuids = 8;
+
+  optional string order_by = 9;
+  optional string order_dir = 10;
+}
+
+message ListResponse{
+  repeated product.v1.Product products = 1;
+  string next_page_token = 2;
+}
+
+message ListDraftsRequest{
+  repeated string markets = 1;
+  int32 page_size = 2;
+  string page_token = 3;
+
+  repeated bytes uuids = 4;
+  repeated string slugs = 5;
+  repeated ProductType types = 6;
+  repeated bytes category_uuids = 7;
+  repeated bytes collection_uuids = 8;
+
+  optional string order_by = 9;
+  optional string order_dir = 10;
+}
+
+message ListDraftsResponse{
+  repeated product.v1.Product products = 1;
+  string next_page_token = 2;
+}
+
+message ListArchivedRequest{
+  repeated string markets = 1;
+  int32 page_size = 2;
+  string page_token = 3;
+
+  repeated bytes uuids = 4;
+  repeated string slugs = 5;
+  repeated ProductType types = 6;
+  repeated bytes category_uuids = 7;
+  repeated bytes collection_uuids = 8;
+
+  optional string order_by = 9;
+  optional string order_dir = 10;
+}
+
+message ListArchivedResponse{
+  repeated product.v1.Product products = 1;
+  string next_page_token = 2;
+}
+
+message AddCategoryRequest{
+  bytes product_uuid = 1;
+  bytes category_uuid = 2;
+}
+
+message AddCategoryResponse {}
+
+message RemoveCategoryRequest{
+  bytes product_uuid = 1;
+  bytes category_uuid = 2;
+}
+
+message RemoveCategoryResponse {}
+
+message AddCollectionRequest{
+  bytes product_uuid = 1;
+  bytes collection_uuid = 2;
+}
+
+message AddCollectionResponse {}
+
+message RemoveCollectionRequest{
+  bytes product_uuid = 1;
+  bytes collection_uuid = 2;
+}
+
+message RemoveCollectionResponse {}
+
+message ArchiveRequest{
+  bytes uuid = 1;
+  bytes admin_uuid = 2;
+  string admin_name = 3;
+  string note = 4;
+}
+
+message ArchiveResponse {}
+
+message RestoreRequest{
+  bytes uuid = 1;
+  bytes admin_uuid = 2;
+  string admin_name = 3;
+  string note = 4;
+}
+
+message RestoreResponse {}
+
+message PingRequest {}
+
+message PingResponse{
+  int64 timestamp = 1;
+}
+
+service ProductService{
+  rpc Ping(PingRequest) returns (PingResponse);
+  rpc Get(GetRequest) returns (GetResponse);
+  rpc GetWithDraft(GetWithDraftRequest) returns (GetWithDraftResponse);
+  rpc GetWithArchived(GetWithArchivedRequest) returns (GetWithArchivedResponse);
+  rpc List(ListRequest) returns (ListResponse);
+  rpc ListDrafts(ListDraftsRequest) returns (ListDraftsResponse);
+  rpc ListArchived(ListArchivedRequest) returns (ListArchivedResponse);
+  rpc AddCategory(AddCategoryRequest) returns (AddCategoryResponse);
+  rpc RemoveCategory(RemoveCategoryRequest) returns (RemoveCategoryResponse);
+  rpc AddCollection(AddCollectionRequest) returns (AddCollectionResponse);
+  rpc RemoveCollection(RemoveCollectionRequest) returns (RemoveCollectionResponse);
+  rpc Archive(ArchiveRequest) returns (ArchiveResponse);
+  rpc Restore(RestoreRequest) returns (RestoreResponse);
+}

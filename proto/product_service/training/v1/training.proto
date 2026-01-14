@@ -1,0 +1,136 @@
+syntax = "proto3";
+
+package proto.product_service.training.v1;
+
+import "proto/product_service/product/v1/product.proto";
+import "proto/product_service/variant/v1/variant.proto";
+
+import "google/protobuf/field_mask.proto";
+
+option go_package = "github.com/mikhail5545/protos/gen/go/product_service/training/v1;trainingpbv1";
+
+message CreateRequest{
+  string title = 1;
+  optional string slug = 2;
+  optional string subtitle = 3;
+  string short_description = 4;
+  repeated string tags = 5;
+  bytes admin_uuid = 8;
+  string admin_name = 9;
+  string note = 10;
+}
+
+message CreateResponse{
+  product.v1.Product product = 1;
+}
+
+message UpdateRequest{
+  bytes uuid = 1;
+  optional string title = 2;
+  optional string slug = 3;
+  bool regenerate_slug = 4;
+  optional string subtitle = 5;
+  optional string description = 6;
+  optional string short_description = 7;
+  repeated string tags = 8;
+  optional string metadata = 9;
+  optional string meta_title = 10;
+  optional string meta_description = 11;
+  optional google.protobuf.FieldMask updates = 12;
+}
+
+message UpdateResponse{
+  bytes uuid = 1;
+  optional string title = 2;
+  optional string slug = 3;
+  optional string subtitle = 4;
+  optional string description = 5;
+  optional string short_description = 6;
+  repeated string tags = 7;
+  optional string metadata = 8;
+  optional string meta_title = 9;
+  optional string meta_description = 10;
+  optional google.protobuf.FieldMask updates = 11;
+}
+
+message CreateVariantRequest{
+  bytes product_uuid = 1;
+  string title = 2;
+  optional string sku = 3;
+
+  optional string option1 = 4;
+  optional string option2 = 5;
+  optional string option3 = 6;
+
+  optional int32 duration_minutes = 7;
+  variant.v1.VariantFormat format = 8;
+  optional int32 max_seats = 9;
+
+  bytes admin_uuid = 10;
+  string admin_name = 11;
+  string note = 12;
+}
+
+message CreateVariantResponse{
+  variant.v1.Variant variant = 1;
+}
+
+message UpdateVariantRequest{
+  bytes uuid = 1;
+  bytes product_uuid = 5;
+  optional string title = 2;
+  optional string sku = 3;
+  bool regenerate_sku = 4;
+
+  optional variant.v1.VariantInventoryPolicy inventory_policy = 6;
+  optional bool allow_backorder = 7;
+
+  optional string option1 = 8;
+  optional string option2 = 9;
+  optional string option3 = 10;
+
+  optional int32 duration_minutes = 11;
+  optional variant.v1.VariantFormat format = 12;
+  optional int32 max_seats = 13;
+
+  optional google.protobuf.FieldMask updates = 14;
+}
+
+message UpdateVariantResponse{
+  bytes uuid = 1;
+  optional string title = 2;
+  optional string sku = 3;
+  optional variant.v1.VariantInventoryPolicy inventory_policy = 4;
+  optional bool allow_backorder = 5;
+  optional string option1 = 6;
+  optional string option2 = 7;
+  optional string option3 = 8;
+  optional int32 duration_minutes = 9;
+  optional variant.v1.VariantFormat format = 10;
+  optional int32 max_seats = 11;
+  optional google.protobuf.FieldMask updates = 12;
+}
+
+message PublishRequest{
+  bytes uuid = 1;
+  bytes admin_uuid = 2;
+  string admin_name = 3;
+  string note = 4;
+}
+
+message PublishResponse {}
+
+message PingRequest {}
+
+message PingResponse {
+  int64 timestamp = 1;
+}
+
+service TrainingService{
+  rpc Ping(PingRequest) returns (PingResponse);
+  rpc Create(CreateRequest) returns (CreateResponse);
+  rpc Update(UpdateRequest) returns (UpdateResponse);
+  rpc CreateVariant(CreateVariantRequest) returns (CreateVariantResponse);
+  rpc UpdateVariant(UpdateVariantRequest) returns (UpdateVariantResponse);
+  rpc Publish(PublishRequest) returns (PublishResponse);
+}

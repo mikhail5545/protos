@@ -1,0 +1,289 @@
+syntax = "proto3";
+
+package proto.product_service.variant.v1;
+
+import "google/protobuf/timestamp.proto";
+
+import "proto/product_service/variant/variant_price/v1/variant_price.proto";
+import "proto/product_service/digital/v1/digital.proto";
+import "proto/product_service/lesson/v1/lesson.proto";
+
+option go_package = "github.com/mikhail5545/protos/gen/go/product_service/variant/v1;variantpbv1";
+
+enum VariantStatus{
+  VARIANT_STATUS_UNSPECIFIED = 0;
+  VARIANT_STATUS_ACTIVE = 1;
+  VARIANT_STATUS_SCHEDULED = 2;
+  VARIANT_STATUS_DRAFT = 3;
+  VARIANT_STATUS_ARCHIVED = 4;
+}
+
+enum VariantInventoryPolicy{
+  VARIANT_INVENTORY_POLICY_UNSPECIFIED = 0;
+  VARIANT_INVENTORY_POLICY_DENY = 1;
+  VARIANT_INVENTORY_POLICY_CONTINUE = 2;
+}
+
+enum VariantFormat{
+  VARIANT_FORMAT_UNSPECIFIED = 0;
+  VARIANT_FORMAT_ONLINE = 1;
+  VARIANT_FORMAT_OFFLINE = 2;
+  VARIANT_FORMAT_HYBRID = 3;
+}
+
+message Variant{
+  bytes uuid = 1;
+  google.protobuf.Timestamp created_at = 2;
+  google.protobuf.Timestamp updated_at = 3;
+  optional google.protobuf.Timestamp deleted_at = 4;
+
+  // Foreign key to the parent Product.
+  bytes product_id = 5;
+  // The current status of the variant (e.g., draft, active).
+  VariantStatus status = 6;
+  // Stock Keeping Unit, a unique identifier for the variant.
+  string sku = 7;
+  // The title of the variant (e.g., "Large", "Blue").
+  string title = 8;
+
+  // The quantity of this variant in stock.
+  int32 inventory_quantity = 9;
+  // Whether to continue selling when out of stock.
+  VariantInventoryPolicy inventory_policy = 10;
+  // If true, customers can order this variant even if it's out of stock.
+  bool allow_backorder = 11;
+
+  // Whether this variant needs to be physically shipped.
+  bool requires_shipping = 12;
+  // The weight in grams, used for shipping calculations.
+  optional int32 weight_gram = 13;
+  // Harmonized System code for international shipping.
+  optional string hs_code = 14;
+
+  // The value for the first variant option (e.g., "Large").
+  optional string option1 = 15;
+  // The value for the second variant option (e.g., "Blue").
+  optional string option2 = 16;
+  // The value for the third variant option.
+  optional string option3 = 17;
+
+  // True if this is a digital product or service.
+  bool is_digital = 18;
+  // The maximum number of times a digital file can be downloaded.
+  optional int32 download_limit = 19;
+  // How many days the customer has access; null means lifetime.
+  optional int32 access_duration_days = 20;
+
+  // Duration of the course or training in minutes.
+  optional int32 duration_minutes = 21;
+  // The format of the variant (e.g., online, offline).
+  optional VariantFormat format = 22;
+  // True if this is the default variant for a product.
+  bool is_default = 23;
+
+  // The date and time this variant becomes available for purchase.
+  optional google.protobuf.Timestamp available_from = 24;
+  // The date and time this variant is no longer available.
+  optional google.protobuf.Timestamp available_to = 25;
+
+  // True if this variant represents an additional charge.
+  bool is_surcharge = 26;
+  // If a surcharge, this points to the base variant.
+  optional bytes base_variant_id = 27;
+
+  // Maximum seats available, if it varies between variants of an event.
+  optional int32 max_seats = 28;
+
+  repeated variant_price.v1.VariantPrice prices = 29;
+  repeated lesson.v1.Lesson lessons = 30;
+  repeated digital.v1.Asset assets = 31;
+
+  optional string note = 32;
+  optional string archive_reason = 33;
+
+  optional bytes created_by = 34;
+  optional bytes published_by = 35;
+  optional bytes archived_by = 36;
+  optional bytes restored_by = 37;
+
+  optional string created_by_name = 38;
+  optional string published_by_name = 39;
+  optional string archived_by_name = 40;
+  optional string restored_by_name = 41;
+}
+
+message GetRequest{
+  optional bytes uuid = 1;
+  optional string sku = 2;
+  // ISO 3166 alpha-3 country code to specify the market context.
+  string market = 3;
+}
+
+message GetResponse{
+  variant.v1.Variant variant = 1;
+}
+
+message GetWithDraftRequest{
+  optional bytes uuid = 1;
+  optional string sku = 2;
+  // ISO 3166 alpha-3 country code to specify the market context.
+  string market = 3;
+}
+
+message GetWithDraftResponse{
+  variant.v1.Variant variant = 1;
+}
+
+message GetWithScheduledRequest{
+  optional bytes uuid = 1;
+  optional string sku = 2;
+  // ISO 3166 alpha-3 country code to specify the market context.
+  string market = 3;
+}
+
+message GetWithScheduledResponse{
+  variant.v1.Variant variant = 1;
+}
+
+message GetWithArchivedRequest{
+  optional bytes uuid = 1;
+  optional string sku = 2;
+  // ISO 3166 alpha-3 country code to specify the market context.
+  string market = 3;
+}
+
+message GetWithArchivedResponse{
+  variant.v1.Variant variant = 1;
+}
+
+message ListRequest{
+  repeated bytes uuids = 1;
+  repeated string skus = 2;
+  repeated bytes product_uuids = 3;
+  repeated string markets = 4;
+  repeated VariantFormat formats = 5;
+  optional bool requires_shipping = 6;
+  optional bool is_digital = 7;
+
+  int32 page_size = 8;
+  string page_token = 9;
+
+  optional string order_by = 10;
+  optional string order_dir = 11;
+}
+
+message ListResponse{
+  repeated variant.v1.Variant variants = 1;
+  string next_page_token = 2;
+}
+
+message ListDraftsRequest{
+  repeated bytes uuids = 1;
+  repeated string skus = 2;
+  repeated bytes product_uuids = 3;
+  repeated string markets = 4;
+  repeated VariantFormat formats = 5;
+  optional bool requires_shipping = 6;
+  optional bool is_digital = 7;
+
+  int32 page_size = 8;
+  string page_token = 9;
+
+  optional string order_by = 10;
+  optional string order_dir = 11;
+}
+
+message ListDraftsResponse{
+  repeated variant.v1.Variant variants = 1;
+  string next_page_token = 2;
+}
+
+message ListScheduledRequest{
+  repeated bytes uuids = 1;
+  repeated string skus = 2;
+  repeated bytes product_uuids = 3;
+  repeated string markets = 4;
+  repeated VariantFormat formats = 5;
+  optional bool requires_shipping = 6;
+  optional bool is_digital = 7;
+
+  int32 page_size = 8;
+  string page_token = 9;
+
+  optional string order_by = 10;
+  optional string order_dir = 11;
+}
+
+message ListScheduledResponse{
+  repeated variant.v1.Variant variants = 1;
+  string next_page_token = 2;
+}
+
+message ListArchivedRequest{
+  repeated bytes uuids = 1;
+  repeated string skus = 2;
+  repeated bytes product_uuids = 3;
+  repeated string markets = 4;
+  repeated VariantFormat formats = 5;
+  optional bool requires_shipping = 6;
+  optional bool is_digital = 7;
+
+  int32 page_size = 8;
+  string page_token = 9;
+
+  optional string order_by = 10;
+  optional string order_dir = 11;
+}
+
+message ListArchivedResponse{
+  repeated variant.v1.Variant variants = 1;
+  string next_page_token = 2;
+}
+
+message PublishRequest{
+  bytes uuid = 1;
+  bytes admin_uuid = 3;
+  string admin_name = 4;
+  string note = 5;
+}
+
+message PublishResponse {}
+
+message ArchiveRequest{
+  bytes uuid = 1;
+  bytes admin_uuid = 3;
+  string admin_name = 4;
+  string note = 5;
+}
+
+message ArchiveResponse {}
+
+message RestoreRequest{
+  bytes uuid = 1;
+  bytes admin_uuid = 3;
+  string admin_name = 4;
+  string note = 5;
+}
+
+message RestoreResponse {}
+
+message PingRequest {}
+
+message PingResponse {
+  int64 timestamp = 1;
+}
+
+service VariantService{
+  rpc Ping(PingRequest) returns (PingResponse);
+  rpc Get(GetRequest) returns (GetResponse);
+  rpc GetWithScheduled(GetWithScheduledRequest) returns (GetWithScheduledResponse);
+  rpc GetWithDraft(GetWithDraftRequest) returns (GetWithDraftResponse);
+  rpc GetWithArchived(GetWithArchivedRequest) returns (GetWithArchivedResponse);
+  rpc List(ListRequest) returns (ListResponse);
+  rpc ListScheduled(ListScheduledRequest) returns (ListScheduledResponse);
+  rpc ListDrafts(ListDraftsRequest) returns (ListDraftsResponse);
+  rpc ListArchived(ListArchivedRequest) returns (ListArchivedResponse);
+  rpc Publish(PublishRequest) returns (PublishResponse);
+  rpc Archive(ArchiveRequest) returns (ArchiveResponse);
+  rpc Restore(RestoreRequest) returns (RestoreResponse);
+}
