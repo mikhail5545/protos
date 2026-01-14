@@ -1,0 +1,36 @@
+name: proto-ci.yml
+on: [pull_request, push]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.20'
+
+      - name: Install protolint
+        run: |
+          go install github.com/yoheimuta/protolint/cmd/protolint@latest
+          export PATH=$PATH:$(go env GOPATH)/bin
+          protolint --version
+
+      - name: Lint protos
+        run: protolint lint proto
+
+      - name: Install protoc
+        run: ./scripts/install-protoc.sh
+
+      - name: Install protoc plugins
+        run: ./scripts/install-protoc-plugins.sh
+
+      - name: Proto compile check
+        run: |
+          TMPDIR=$$(mktemp -d)
+          protoc -I proto \
+            --go_out=${TMPDIR} --go_opt=paths=source_relative \
+            --go-grpc_out=${TMPDIR} --go-grpc_opt=paths=source_relative \
+            $$(find proto -name '*.proto')
