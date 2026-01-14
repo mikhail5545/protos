@@ -1,11 +1,7 @@
 version: v2
-name: vitainmove/protos
-build:
-  roots:
-    - proto
-  lint:
-    use:
-      - DEFAULT
-  breaking:
-    use:
-      - FILE
+lint:
+  use:
+    - DEFAULT
+breaking:
+  use:
+    - FILE
