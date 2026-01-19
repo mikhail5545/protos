@@ -27,4 +27,4 @@ jobs:
       - name: Push module to buf.build
         env:
           TAG: ${{ github.ref_name }}
-        run: buf push buf.build/vitainmove/protos --label ${TAG}
+        run: buf push buf.build/vitainmove/protos
