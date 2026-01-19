@@ -4,9 +4,9 @@ package proto.product_service.variant.v1;
 
 import "google/protobuf/timestamp.proto";
 
-import "proto/product_service/variant/variant_price/v1/variant_price.proto";
-import "proto/product_service/digital/v1/digital.proto";
-import "proto/product_service/lesson/v1/lesson.proto";
+import "product_service/variant/variant_price/v1/variant_price.proto";
+import "product_service/digital/v1/digital.proto";
+import "product_service/lesson/v1/lesson.proto";
 
 option go_package = "github.com/mikhail5545/protos/gen/go/product_service/variant/v1;variantpbv1";
 

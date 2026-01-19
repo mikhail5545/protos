@@ -4,10 +4,10 @@ package proto.product_service.product.v1;
 
 import "google/protobuf/timestamp.proto";
 
-import "proto/product_service/variant/v1/variant.proto";
-import "proto/product_service/category/v1/category.proto";
-import "proto/product_service/collection/v1/collection.proto";
-import "proto/product_service/product/product_image/v1/product_image.proto";
+import "product_service/variant/v1/variant.proto";
+import "product_service/category/v1/category.proto";
+import "product_service/collection/v1/collection.proto";
+import "product_service/product/product_image/v1/product_image.proto";
 
 option go_package = "github.com/mikhail5545/protos/gen/go/product_service/product/v1;productpbv1";
 

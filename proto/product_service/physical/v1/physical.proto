@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package proto.product_service.physical.v1;
 
-import "proto/product_service/product/v1/product.proto";
-import "proto/product_service/variant/v1/variant.proto";
+import "product_service/product/v1/product.proto";
+import "product_service/variant/v1/variant.proto";
 
 import "google/protobuf/field_mask.proto";
 

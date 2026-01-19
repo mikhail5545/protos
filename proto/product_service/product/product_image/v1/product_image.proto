@@ -4,7 +4,7 @@ package proto.product_service.product.product_image.v1;
 
 import "google/protobuf/timestamp.proto";
 
-import "proto/product_service/image/v1/image.proto";
+import "product_service/image/v1/image.proto";
 
 option go_package = "github.com/mikhail5545/protos/gen/go/product_service/product/product_image/v1;product_imagepbv1";
 

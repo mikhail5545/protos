@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package proto.product_service.lesson.v1;
 
-import "proto/product_service/lesson/lesson_video_version/v1/lesson_video_version.proto";
-import "proto/product_service/digital/v1/digital.proto";
+import "product_service/lesson/lesson_video_version/v1/lesson_video_version.proto";
+import "product_service/digital/v1/digital.proto";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/field_mask.proto";

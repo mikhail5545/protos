@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package proto.product_service.lesson.lesson_video_version.v1;
 
-import "proto/product_service/video/v1/video.proto";
+import "product_service/video/v1/video.proto";
 
 import "google/protobuf/timestamp.proto";
 
