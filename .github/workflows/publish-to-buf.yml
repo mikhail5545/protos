@@ -1,0 +1,31 @@
+name: publish-to-buf.yml
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install buf
+        run: |
+          curl -sSLf "https://github.com/bufbuild/buf/releases/latest/download/buf-$(uname | tr '[:upper:]' '[:lower:]')-x86_64" -o /usr/local/bin/buf
+          chmod +x /usr/local/bin/buf
+      - name: Buf lint
+        run: buf lint
+      - name: build descriptor
+        run: buf build -o protos.pb
+      - name: Login to buf.build
+        env:
+          BUF_API_TOKEN: ${{ secrets.BUF_API_TOKEN }}
+          BUF_USER: ${{ secrets.BUF_USER }}
+        run: echo ${BUF_API_TOKEN} | buf registry login --username ${BUF_USER} --token-stdin
+      - name: Push module to buf.build
+        env:
+          TAG: ${{ github.ref_name }}
+        run: buf push buf.build/vitainmove/protos:${TAG}
