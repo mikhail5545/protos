@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package proto.product_service.category.v1;
+package product_service.category.v1;
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/field_mask.proto";

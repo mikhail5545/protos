@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package proto.product_service.variant.v1;
+package product_service.variant.v1;
 
 import "google/protobuf/timestamp.proto";
 

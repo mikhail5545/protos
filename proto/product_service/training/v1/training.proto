@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package proto.product_service.training.v1;
+package product_service.training.v1;
 
 import "product_service/product/v1/product.proto";
 import "product_service/variant/v1/variant.proto";
