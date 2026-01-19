@@ -23,9 +23,8 @@ jobs:
       - name: Login to buf.build
         env:
           BUF_API_TOKEN: ${{ secrets.BUF_API_TOKEN }}
-          BUF_USER: ${{ secrets.BUF_USER }}
-        run: echo ${BUF_API_TOKEN} | buf registry login --username ${BUF_USER} --token-stdin
+        run: echo ${BUF_API_TOKEN} | buf registry login --token-stdin
       - name: Push module to buf.build
         env:
           TAG: ${{ github.ref_name }}
-        run: buf push buf.build/vitainmove/protos:${TAG}
+        run: buf push buf.build/vitainmove/protos --label ${TAG} --label releases
