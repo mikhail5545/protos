@@ -48,6 +48,12 @@ message DeleteRequest{
 
 message DeleteResponse {}
 
+message DeleteBatchRequest{
+  repeated bytes media_service_uuids = 1;
+}
+
+message DeleteBatchResponse {}
+
 message PingRequest {}
 
 message PingResponse {
@@ -58,4 +64,5 @@ service ImageService{
   rpc Ping(PingRequest) returns (PingResponse);
   rpc BrokenImage(BrokenImageRequest) returns (BrokenImageResponse);
   rpc Delete(DeleteRequest) returns (DeleteResponse);
+  rpc DeleteBatch(DeleteBatchRequest) returns (DeleteBatchResponse);
 }

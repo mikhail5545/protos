@@ -1,0 +1,191 @@
+syntax = "proto3";
+
+package media_service.cloudinary.asset.v1;
+
+import "google/protobuf/timestamp.proto";
+import "media_service/cloudinary/metadata/v1/asset_metadata.proto";
+
+option go_package = "github.com/mikhail5545/protos/gen/go/media_service/cloudinary/asset/v1;cld_assetpbv1";
+
+enum AssetStatus{
+  ASSET_STATUS_UNSPECIFIED = 0;
+  ASSET_STATUS_ACTIVE = 1;
+  ASSET_STATUS_ARCHIVED = 2;
+  ASSET_STATUS_BROKEN = 3;
+}
+
+message Asset{
+  bytes uuid = 1;
+  google.protobuf.Timestamp created_at = 2;
+  google.protobuf.Timestamp updated_at = 3;
+  optional google.protobuf.Timestamp deleted_at = 4;
+
+  AssetStatus status = 5;
+  string cloudinary_asset_id = 6;
+  string url = 7;
+  string secure_url = 8;
+  string cloudinary_public_id = 26;
+  string resource_type = 9;
+  string format = 10;
+  optional int32 width = 11;
+  optional int32 height = 12;
+  repeated string tags = 13;
+  string asset_folder = 14;
+  string display_name = 15;
+
+  bytes created_by = 16;
+  bytes archived_by = 17;
+  bytes restored_by = 18;
+  bytes marked_as_broken_by = 19;
+
+  string created_by_name = 20;
+  string archived_by_name = 21;
+  string restored_by_name = 22;
+  string marked_as_broken_by_name = 23;
+
+  optional string note = 24;
+  optional string archive_reason = 25;
+}
+
+message Details{
+  Asset asset = 1;
+  metadata.v1.AssetMetadata asset_metadata = 2;
+}
+
+message GetRequest{
+  bytes uuid = 1;
+}
+
+message GetResponse{
+  Details details = 1;
+}
+
+message GetWithArchivedRequest{
+  bytes uuid = 1;
+}
+
+message GetWithArchivedResponse{
+  Details details = 1;
+}
+
+message GetWithBrokenRequest{
+  bytes uuid = 1;
+}
+
+message GetWithBrokenResponse{
+  Details details = 1;
+}
+
+message ListRequest{
+  repeated bytes uuids = 1;
+  repeated string cloudinary_asset_ids = 2;
+  repeated string cloudinary_public_ids = 3;
+  repeated string resource_types = 4;
+  repeated string formats = 5;
+  optional string order_dir = 6;
+  optional string order_by = 7;
+  int32 page_size = 8;
+  string page_token = 9;
+}
+
+message ListResponse{
+  repeated Details details = 1;
+  string next_page_token = 2;
+}
+
+message ListArchivedRequest{
+  repeated bytes uuids = 1;
+  repeated string cloudinary_asset_ids = 2;
+  repeated string cloudinary_public_ids = 3;
+  repeated string resource_types = 4;
+  repeated string formats = 5;
+  optional string order_dir = 6;
+  optional string order_by = 7;
+  int32 page_size = 8;
+  string page_token = 9;
+}
+
+message ListArchivedResponse{
+  repeated Details details = 1;
+  string next_page_token = 2;
+}
+
+message ListBrokenRequest{
+  repeated bytes uuids = 1;
+  repeated string cloudinary_asset_ids = 2;
+  repeated string cloudinary_public_ids = 3;
+  repeated string resource_types = 4;
+  repeated string formats = 5;
+  optional string order_dir = 6;
+  optional string order_by = 7;
+  int32 page_size = 8;
+  string page_token = 9;
+}
+
+message ListBrokenResponse{
+  repeated Details details = 1;
+  string next_page_token = 2;
+}
+
+message CreateSignedUploadURLRequest{
+  optional string eager = 1;
+  string public_id = 2;
+  string file = 3;
+  bytes admin_uuid = 4;
+  string admin_name = 5;
+  optional string note = 6;
+}
+
+// Response for CreateSignedUploadURL RPC, containing generated signature and related info for constructing signed upload url.
+message CreateSignedUploadURLResponse{
+  string signature = 1;
+  string  timestamp = 2;
+  string api_key = 3;
+  optional string eager = 4;
+  string public_id = 5;
+  string resource_type = 6;
+}
+
+message ArchiveRequest{
+  bytes uuid = 1;
+  bytes admin_uuid = 2;
+  string admin_name = 3;
+  string note = 4;
+}
+
+message ArchiveResponse{}
+
+message RestoreRequest{
+  bytes uuid = 1;
+  bytes admin_uuid = 2;
+  string admin_name = 3;
+  string note = 4;
+}
+
+message RestoreResponse{}
+
+message DeleteRequest{
+  bytes uuid = 1;
+}
+
+message DeleteResponse{}
+
+message PingRequest{}
+
+message PingResponse{
+   int64 timestamp = 1;
+}
+
+service AssetService{
+  rpc Ping(PingRequest) returns (PingResponse);
+  rpc Get(GetRequest) returns (GetResponse);
+  rpc GetWithArchived(GetWithArchivedRequest) returns (GetWithArchivedResponse);
+  rpc GetWithBroken(GetWithBrokenRequest) returns (GetWithBrokenResponse);
+  rpc List(ListRequest) returns (ListResponse);
+  rpc ListArchived(ListArchivedRequest) returns (ListArchivedResponse);
+  rpc ListBroken(ListBrokenRequest) returns (ListBrokenResponse);
+  rpc CreateSignedUploadURL(CreateSignedUploadURLRequest) returns (CreateSignedUploadURLResponse);
+  rpc Archive(ArchiveRequest) returns (ArchiveResponse);
+  rpc Restore(RestoreRequest) returns (RestoreResponse);
+  rpc Delete(DeleteRequest) returns (DeleteResponse);
+}

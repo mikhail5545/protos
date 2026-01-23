@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package media_service.cloudinary.metadata.v1;
+
+option go_package = "github.com/mikhail5545/protos/gen/go/media_service/cloudinary/metadata/v1;cld_metapbv1";
+
+// AssetMetadata represents metadata information about a media asset stored in MongoDB.
+message AssetMetadata{
+  string key = 1;
+  repeated Owner owners = 2;
+}
+
+// Owner represents an entity associated with the asset.
+message Owner {
+  bytes owner_uuid = 1;
+  string owner_type = 2;
+}

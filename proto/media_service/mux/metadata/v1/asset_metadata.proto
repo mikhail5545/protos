@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package media_service.mux.metadata.v1;
+
+import "media_service/mux/webhook/v1/webhook.proto";
+
+option go_package = "github.com/mikhail5545/protos/gen/go/media_service/mux/metadata/v1;mux_metapbv1";
+
+// AssetMetadata represents metadata information about a media asset stored in MongoDB.
+message AssetMetadata {
+  string key = 1;
+  string title = 2;
+  string creator_id = 3;
+  repeated Owner owners = 4;
+  repeated webhook.v1.MuxWebhookTrack tracks = 5;
+  repeated webhook.v1.MuxWebhookPlaybackID playback_ids = 6;
+}
+
+// Owner represents an entity associated with the asset.
+message Owner{
+   bytes owner_uuid = 1;
+   string owner_type = 2;
+}

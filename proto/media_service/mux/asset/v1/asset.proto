@@ -1,0 +1,270 @@
+syntax = "proto3";
+
+package media_service.mux.asset.v1;
+
+import "google/protobuf/timestamp.proto";
+import "media_service/mux/webhook/v1/webhook.proto";
+import "media_service/mux/metadata/v1/asset_metadata.proto";
+
+option go_package = "github.com/mikhail5545/protos/gen/go/media_service/mux/asset/v1;mux_assetpbv1";
+
+enum AssetStatus {
+  ASSET_STATUS_UNSPECIFIED = 0;
+  ASSET_STATUS_UPLOAD_URL_GENERATED = 1;
+  ASSET_STATUS_ACTIVE = 2;
+  ASSET_STATUS_ARCHIVED = 3;
+  ASSET_STATUS_BROKEN = 4;
+}
+
+enum AssetUploadStatus{
+  ASSET_UPLOAD_STATUS_UNSPECIFIED = 0;
+  ASSET_UPLOAD_STATUS_PREPARING = 1;
+  ASSET_UPLOAD_STATUS_READY = 2;
+  ASSET_UPLOAD_STATUS_ERRORED = 3;
+  ASSET_UPLOAD_STATUS_DELETED = 4;
+}
+
+enum AssetState{
+  ASSET_STATE_UNSPECIFIED = 0;
+  ASSET_STATE_INGESTING = 1;
+  ASSET_STATE_TRANSCODING = 2;
+  ASSET_STATE_COMPLETED = 3;
+  ASSET_STATE_LIVE = 4;
+  ASSET_STATE_ERRORED = 5;
+}
+
+enum AssetIngestType{
+  ASSET_INGEST_TYPE_UNSPECIFIED = 0;
+  ASSET_INGEST_TYPE_ON_DEMAND_URL = 1;
+  ASSET_INGEST_TYPE_ON_DEMAND_DIRECT_UPLOAD = 2;
+  ASSET_INGEST_TYPE_ON_DEMAND_CLIP = 3;
+  ASSET_INGEST_TYPE_LIVE_RTMP = 4;
+  ASSET_INGEST_TYPE_LIVE_SRT = 5;
+}
+
+message Asset{
+  bytes uuid = 1;
+  google.protobuf.Timestamp created_at = 2;
+  google.protobuf.Timestamp updated_at = 3;
+  optional google.protobuf.Timestamp deleted_at = 4;
+
+  // Unique identifier for the direct upload (External MUX API reference)
+  string mux_upload_id = 5;
+  // Unique identifier for the MUX asset (External MUX API reference)
+  string mux_asset_id = 6;
+  // The detailed state of the asset ingest progress. This field is useful for relaying more granular
+  // processing information to end users when a non-standard input is encountered.
+  AssetState state = 7;
+  // The status of the primary MUX asset track.
+  AssetUploadStatus upload_status = 8;
+  // The duration of the asset in seconds.
+  float duration = 9;
+  // The aspect ratio of the asset, represented as a string (e.g., "16:9").
+  string aspect_ratio = 10;
+  optional google.protobuf.Timestamp asset_created_at = 11;
+  // The resolution tier of the asset (e.g., "720p", "1080p", "1440p").
+  optional string resolution_tier = 12;
+  // The type of ingest used to create the asset.
+  AssetIngestType ingest_type = 13;
+
+  // Facilitates quick lookup for token generation without querying MongoDB, in which all playback IDs are stored.
+  optional string primary_signed_playback_id = 14;
+  optional string primary_public_playback_id = 15;
+
+  // --- audit fields ---
+  optional bytes created_by = 16;
+  optional bytes archived_by = 17;
+  optional bytes restored_by = 18;
+  optional bytes marked_as_broken_by = 19;
+
+  optional string created_by_name = 20;
+  optional string archived_by_name = 21;
+  optional string restored_by_name = 22;
+  optional string marked_as_broken_by_name = 23;
+
+  optional string note = 24;
+  optional string archive_reason = 25;
+
+  // This is the MUX webhook event id that caused the asset to be archived.
+  optional string archive_event_id = 26;
+  optional webhook.v1.MuxWebhookError mux_error = 27;
+}
+
+// Details is a DTO that combines the core Asset model with its metadata.
+message Details{
+  Asset asset = 1;
+  metadata.v1.AssetMetadata asset_metadata = 2;
+}
+
+message GetRequest{
+  bytes uuid = 1;
+  optional AssetUploadStatus upload_status = 2;
+}
+
+message GetResponse{
+  Details details = 1;
+}
+
+message GetWithArchivedRequest{
+  bytes uuid = 1;
+  optional AssetUploadStatus upload_status = 2;
+}
+
+message GetWithArchivedResponse{
+  Details details = 1;
+}
+
+message GetWithBrokenRequest{
+  bytes uuid = 1;
+  optional AssetUploadStatus upload_status = 2;
+}
+
+message GetWithBrokenResponse{
+  Details details = 1;
+}
+
+message ListRequest{
+  repeated bytes uuids = 1;
+  repeated string mux_upload_ids = 2;
+  repeated string mux_asset_ids = 3;
+
+  repeated string aspect_ratios = 4;
+  repeated string resolution_tiers = 5;
+  repeated AssetIngestType ingest_types = 6;
+  repeated AssetUploadStatus upload_statuses = 7;
+
+  optional string order_by = 8;
+  optional string order_dir = 9;
+
+  int32 page_size = 10;
+  optional string next_page_token = 11;
+}
+
+message ListResponse{
+  repeated Details details = 1;
+  string next_page_token = 2;
+}
+
+message ListArchivedRequest{
+  repeated bytes uuids = 1;
+  repeated string mux_upload_ids = 2;
+  repeated string mux_asset_ids = 3;
+
+  repeated string aspect_ratios = 4;
+  repeated string resolution_tiers = 5;
+  repeated AssetIngestType ingest_types = 6;
+  repeated AssetUploadStatus upload_statuses = 7;
+
+  optional string order_by = 8;
+  optional string order_dir = 9;
+
+  int32 page_size = 10;
+  optional string next_page_token = 11;
+}
+
+message ListArchivedResponse{
+  repeated Details details = 1;
+  string next_page_token = 2;
+}
+
+message ListBrokenRequest{
+  repeated bytes uuids = 1;
+  repeated string mux_upload_ids = 2;
+  repeated string mux_asset_ids = 3;
+
+  repeated string aspect_ratios = 4;
+  repeated string resolution_tiers = 5;
+  repeated AssetIngestType ingest_types = 6;
+  repeated AssetUploadStatus upload_statuses = 7;
+
+  optional string order_by = 8;
+  optional string order_dir = 9;
+
+  int32 page_size = 10;
+  optional string next_page_token = 11;
+}
+
+message ListBrokenResponse{
+  repeated Details details = 1;
+  string next_page_token = 2;
+}
+
+message CreateUploadURLRequest{
+  string title = 1;
+  bytes admin_uuid = 2;
+  string admin_name = 3;
+}
+
+message CreateUploadURLResponse{
+  string url = 1;
+  int64 timeout = 2;
+  string status = 3;
+  string id = 4;
+  string cors_origin = 5;
+}
+
+message ArchiveRequest{
+  bytes uuid = 1;
+  bytes admin_uuid = 2;
+  string admin_name = 3;
+  string note = 4;
+}
+
+message ArchiveResponse {}
+
+message MarkAsBrokenRequest{
+  bytes uuid = 1;
+  bytes admin_uuid = 2;
+  string admin_name = 3;
+  string note = 4;
+}
+
+message MarkAsBrokenResponse {}
+
+message DeleteRequest{
+  bytes uuid = 1;
+  bytes admin_uuid = 2;
+  string admin_name = 3;
+  string note = 4;
+}
+
+message DeleteResponse {}
+
+message AddOwnerRequest{
+  bytes uuid = 1;
+  bytes owner_uuid = 2;
+  string owner_type = 3;
+}
+
+message AddOwnerResponse {}
+
+message RemoveOwnerRequest{
+  bytes uuid = 1;
+  bytes owner_uuid = 2;
+  string owner_type = 3;
+}
+
+message RemoveOwnerResponse{}
+
+message PingRequest {}
+
+message PingResponse {
+  // unix epoch
+  int64 timestamp = 1;
+}
+
+service AssetService{
+  rpc Ping(PingRequest) returns (PingResponse);
+  rpc Get(GetRequest) returns (GetResponse);
+  rpc GetWithArchived(GetWithArchivedRequest) returns (GetWithArchivedResponse);
+  rpc GetWithBroken(GetWithBrokenRequest) returns (GetWithBrokenResponse);
+  rpc List(ListRequest) returns (ListResponse);
+  rpc ListArchived(ListArchivedRequest) returns (ListArchivedResponse);
+  rpc ListBroken(ListBrokenRequest) returns (ListBrokenResponse);
+  rpc CreateUploadURL(CreateUploadURLRequest) returns (CreateUploadURLResponse);
+  rpc Archive(ArchiveRequest) returns (ArchiveResponse);
+  rpc MarkAsBroken(MarkAsBrokenRequest) returns (MarkAsBrokenResponse);
+  rpc Delete(DeleteRequest) returns (DeleteResponse);
+  rpc AddOwner(AddOwnerRequest) returns (AddOwnerResponse);
+  rpc RemoveOwner(RemoveOwnerRequest) returns (RemoveOwnerResponse);
+}
