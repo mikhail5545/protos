@@ -176,6 +176,15 @@ message PingResponse{
    int64 timestamp = 1;
 }
 
+message MarkAsBrokenRequest{
+  bytes uuid = 1;
+  bytes admin_uuid = 2;
+  string admin_name = 3;
+  string note = 4;
+}
+
+message MarkAsBrokenResponse{}
+
 service AssetService{
   rpc Ping(PingRequest) returns (PingResponse);
   rpc Get(GetRequest) returns (GetResponse);
@@ -188,4 +197,5 @@ service AssetService{
   rpc Archive(ArchiveRequest) returns (ArchiveResponse);
   rpc Restore(RestoreRequest) returns (RestoreResponse);
   rpc Delete(DeleteRequest) returns (DeleteResponse);
+  rpc MarkAsBroken(MarkAsBrokenRequest) returns (MarkAsBrokenResponse);
 }

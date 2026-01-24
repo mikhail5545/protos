@@ -246,11 +246,32 @@ message RemoveOwnerRequest{
 
 message RemoveOwnerResponse{}
 
+message RestoreRequest{
+  bytes uuid = 1;
+  bytes admin_uuid = 2;
+  string admin_name = 3;
+  string note = 4;
+}
+
+message RestoreResponse{}
+
 message PingRequest {}
 
 message PingResponse {
   // unix epoch
   int64 timestamp = 1;
+}
+
+message GeneratePlaybackTokenRequest {
+  bytes asset_uuid = 1;
+  bytes user_uuid = 2;
+  int64 expiration = 3;
+  optional bytes session_uuid = 4;
+  optional string user_agent = 5;
+}
+
+message GeneratePlaybackTokenResponse{
+  string token = 1;
 }
 
 service AssetService{
@@ -264,7 +285,9 @@ service AssetService{
   rpc CreateUploadURL(CreateUploadURLRequest) returns (CreateUploadURLResponse);
   rpc Archive(ArchiveRequest) returns (ArchiveResponse);
   rpc MarkAsBroken(MarkAsBrokenRequest) returns (MarkAsBrokenResponse);
+  rpc Restore(RestoreRequest) returns (RestoreResponse);
   rpc Delete(DeleteRequest) returns (DeleteResponse);
   rpc AddOwner(AddOwnerRequest) returns (AddOwnerResponse);
   rpc RemoveOwner(RemoveOwnerRequest) returns (RemoveOwnerResponse);
+  rpc GeneratePlaybackToken(GeneratePlaybackTokenRequest) returns (GeneratePlaybackTokenResponse);
 }
