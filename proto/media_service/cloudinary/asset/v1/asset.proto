@@ -185,6 +185,22 @@ message MarkAsBrokenRequest{
 
 message MarkAsBrokenResponse{}
 
+message AddOwnerRequest{
+  bytes uuid = 1;
+  bytes owner_uuid = 2;
+  string owner_type = 3;
+}
+
+message AddOwnerResponse {}
+
+message RemoveOwnerRequest{
+  bytes uuid = 1;
+  bytes owner_uuid = 2;
+  string owner_type = 3;
+}
+
+message RemoveOwnerResponse{}
+
 service AssetService{
   rpc Ping(PingRequest) returns (PingResponse);
   rpc Get(GetRequest) returns (GetResponse);
@@ -198,4 +214,6 @@ service AssetService{
   rpc Restore(RestoreRequest) returns (RestoreResponse);
   rpc Delete(DeleteRequest) returns (DeleteResponse);
   rpc MarkAsBroken(MarkAsBrokenRequest) returns (MarkAsBrokenResponse);
+  rpc AddOwner(AddOwnerRequest) returns (AddOwnerResponse);
+  rpc RemoveOwner(RemoveOwnerRequest) returns (RemoveOwnerResponse);
 }
