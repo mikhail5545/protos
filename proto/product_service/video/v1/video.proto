@@ -50,6 +50,12 @@ message DeleteRequest{
 
 message DeleteResponse {}
 
+message ForceDeleteRequest{
+  bytes media_service_uuid = 1;
+}
+
+message ForceDeleteResponse {}
+
 message PingRequest {}
 
 message PingResponse {
@@ -60,4 +66,6 @@ service VideoService{
   rpc Ping(PingRequest) returns (PingResponse);
   rpc BrokenVideo(BrokenVideoRequest) returns (BrokenVideoResponse);
   rpc Delete(DeleteRequest) returns (DeleteResponse);
+  // ForceDelete permanently deletes a video and all its associated data. It should be used with caution in scenarios where data recovery is not possible through standard deletion methods.
+  rpc ForceDelete(ForceDeleteRequest) returns (ForceDeleteResponse);
 }

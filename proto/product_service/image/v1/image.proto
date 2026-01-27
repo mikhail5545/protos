@@ -48,11 +48,17 @@ message DeleteRequest{
 
 message DeleteResponse {}
 
-message DeleteBatchRequest{
+message ForceDeleteRequest{
+  bytes media_service_uuid = 1;
+}
+
+message ForceDeleteResponse {}
+
+message ForceDeleteBatchRequest{
   repeated bytes media_service_uuids = 1;
 }
 
-message DeleteBatchResponse {}
+message ForceDeleteBatchResponse {}
 
 message PingRequest {}
 
@@ -64,5 +70,8 @@ service ImageService{
   rpc Ping(PingRequest) returns (PingResponse);
   rpc BrokenImage(BrokenImageRequest) returns (BrokenImageResponse);
   rpc Delete(DeleteRequest) returns (DeleteResponse);
-  rpc DeleteBatch(DeleteBatchRequest) returns (DeleteBatchResponse);
+  // ForceDelete permanently deletes an image and all its associated data. It should be used with caution in scenarios where data recovery is not possible through standard deletion methods.
+  rpc ForceDelete(ForceDeleteRequest) returns (ForceDeleteResponse);
+  // ForceDeleteBatch permanently deletes images and all associated data. It should be used with caution in scenarios where data recovery is not possible through standard deletion methods.
+  rpc ForceDeleteBatch(ForceDeleteBatchRequest) returns (ForceDeleteBatchResponse);
 }
