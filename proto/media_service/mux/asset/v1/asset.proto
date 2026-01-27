@@ -49,18 +49,18 @@ message Asset{
   optional google.protobuf.Timestamp deleted_at = 4;
 
   // Unique identifier for the direct upload (External MUX API reference)
-  string mux_upload_id = 5;
+  optional string mux_upload_id = 5;
   // Unique identifier for the MUX asset (External MUX API reference)
-  string mux_asset_id = 6;
+  optional string mux_asset_id = 6;
   // The detailed state of the asset ingest progress. This field is useful for relaying more granular
   // processing information to end users when a non-standard input is encountered.
   AssetState state = 7;
   // The status of the primary MUX asset track.
   AssetUploadStatus upload_status = 8;
   // The duration of the asset in seconds.
-  float duration = 9;
+  optional float duration = 9;
   // The aspect ratio of the asset, represented as a string (e.g., "16:9").
-  string aspect_ratio = 10;
+  optional string aspect_ratio = 10;
   optional google.protobuf.Timestamp asset_created_at = 11;
   // The resolution tier of the asset (e.g., "720p", "1080p", "1440p").
   optional string resolution_tier = 12;
@@ -88,6 +88,8 @@ message Asset{
   // This is the MUX webhook event id that caused the asset to be archived.
   optional string archive_event_id = 26;
   optional webhook.v1.MuxWebhookError mux_error = 27;
+
+  AssetStatus status = 28;
 }
 
 // Details is a DTO that combines the core Asset model with its metadata.
