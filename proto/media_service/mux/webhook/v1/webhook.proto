@@ -13,10 +13,10 @@ message MuxWebhookPlaybackID{
 message MuxWebhookTrack {
   string id = 1;
   string type = 2;
-  optional float duration = 3;
+  optional double duration = 3;
   optional int64 max_width = 4;
   optional int64 max_height = 5;
-  optional int64 max_frame_rate = 6;
+  optional double max_frame_rate = 6;
   optional int64 max_channels = 7;
   optional string text_type = 8;
   optional string text_source = 9;
