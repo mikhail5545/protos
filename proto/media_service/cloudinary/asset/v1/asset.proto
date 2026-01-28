@@ -33,15 +33,15 @@ message Asset{
   string asset_folder = 14;
   string display_name = 15;
 
-  bytes created_by = 16;
-  bytes archived_by = 17;
-  bytes restored_by = 18;
-  bytes marked_as_broken_by = 19;
+  optional bytes created_by = 16;
+  optional bytes archived_by = 17;
+  optional bytes restored_by = 18;
+  optional bytes marked_as_broken_by = 19;
 
-  string created_by_name = 20;
-  string archived_by_name = 21;
-  string restored_by_name = 22;
-  string marked_as_broken_by_name = 23;
+  optional string created_by_name = 20;
+  optional string archived_by_name = 21;
+  optional string restored_by_name = 22;
+  optional string marked_as_broken_by_name = 23;
 
   optional string note = 24;
   optional string archive_reason = 25;
