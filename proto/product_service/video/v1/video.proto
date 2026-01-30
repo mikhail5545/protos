@@ -8,8 +8,10 @@ option go_package = "github.com/mikhail5545/protos/gen/go/product_service/video/
 
 enum VideoStatus{
   VIDEO_STATUS_UNSPECIFIED = 0;
-  VIDEO_STATUS_ACTIVE = 1;
-  VIDEO_STATUS_BROKEN = 2;
+  VIDEO_STATUS_PLAYBACK_URL_GENERATED = 1;
+  VIDEO_STATUS_ACTIVE = 2;
+  VIDEO_STATUS_ARCHIVED = 3;
+  VIDEO_STATUS_BROKEN = 4;
 }
 
 enum UploadStatus{
@@ -17,6 +19,7 @@ enum UploadStatus{
   UPLOAD_STATUS_PREPARING = 1;
   UPLOAD_STATUS_READY = 2;
   UPLOAD_STATUS_ERRORED = 3;
+  UPLOAD_STATUS_DELETED = 4;
 }
 
 message Video{
@@ -26,11 +29,11 @@ message Video{
   optional google.protobuf.Timestamp deleted_at = 4;
 
   bytes media_service_uuid = 5;
-  optional string public_playback_id = 6;
-  string signed_playback_id = 7;
-  float duration_seconds = 8;
+  optional string primary_public_playback_id = 6;
+  optional string primary_signed_playback_id = 7;
+  double duration_seconds = 8;
   optional string aspect_ratio = 9;
-  optional string thumbnail_url = 10;
+  optional string resolution_tier = 10;
   VideoStatus status = 11;
   UploadStatus upload_status = 12;
 }
@@ -62,10 +65,25 @@ message PingResponse {
   int64 timestamp = 1;
 }
 
+message UpdateRequest{
+  bytes media_service_uuid = 1;
+  optional string primary_public_playback_id = 2;
+  optional string primary_signed_playback_id = 3;
+  optional double duration_seconds = 4;
+  optional string aspect_ratio = 5;
+  optional string resolution_tier = 6;
+  optional VideoStatus status = 7;
+  optional UploadStatus upload_status = 8;
+}
+
+message UpdateResponse {}
+
 service VideoService{
   rpc Ping(PingRequest) returns (PingResponse);
   rpc BrokenVideo(BrokenVideoRequest) returns (BrokenVideoResponse);
   rpc Delete(DeleteRequest) returns (DeleteResponse);
   // ForceDelete permanently deletes a video and all its associated data. It should be used with caution in scenarios where data recovery is not possible through standard deletion methods.
   rpc ForceDelete(ForceDeleteRequest) returns (ForceDeleteResponse);
+  // Update is designed to be used only by internal services to modify video data, for example, on external VOD provider webhooks.
+  rpc Update(UpdateRequest) returns (UpdateResponse);
 }

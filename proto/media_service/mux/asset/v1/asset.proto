@@ -58,7 +58,7 @@ message Asset{
   // The status of the primary MUX asset track.
   AssetUploadStatus upload_status = 8;
   // The duration of the asset in seconds.
-  optional float duration = 9;
+  optional double duration = 9;
   // The aspect ratio of the asset, represented as a string (e.g., "16:9").
   optional string aspect_ratio = 10;
   optional google.protobuf.Timestamp asset_created_at = 11;
